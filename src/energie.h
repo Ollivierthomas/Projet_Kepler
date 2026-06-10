@@ -1,3 +1,6 @@
+//// @file energie.h
+/// @brief Déclaration des fonctions pour calculer l'énergie cinétique et potentielle
+
 #ifndef ENERGIE_H
 #define ENERGIE_H
 

@@ -1,3 +1,6 @@
+/// @file trajectoire.c
+/// @brief Simulation de la trajectoire de la Terre autour du Soleil en utilisant la méthode d'Euler
+
 #include "energie.h"
 #include "euler.h"
 #include "vectors.h"
@@ -7,6 +10,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+/// Exporte les données de la simulation dans un fichier JSON
+/// @param filename Nom du fichier de sortie
+/// @param array_positions Tableau dynamique contenant les positions de la Terre
+/// @param array_cinetique Tableau dynamique contenant les énergies cinétiques de la Terre
+/// @param array_potentielle Tableau dynamique contenant les énergies potentielles de la Terre
+/// @param h Pas de temps utilisé dans la simulation   
 void export_json(char* filename, Array(Vecteurs)* array_positions, Array(double)* array_cinetique, Array(double)* array_potentielle, double h) {
     FILE *f = fopen(filename, "w");
 
