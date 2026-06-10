@@ -1,4 +1,4 @@
-import data from './data.json' with { type: 'json' };
+import data from './data_terre.json' with { type: 'json' };
 
 const Sun = { x: 0, y: 0, z: 0, name: "Soleil" }; // Position du Soleil au centre du graphique
 
