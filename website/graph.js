@@ -1,9 +1,8 @@
-import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm"
 import data from './data.json' with { type: 'json' };
 
 const Sun = { x: 0, y: 0, z: 0, name: "Soleil" }; // Position du Soleil au centre du graphique
 
-const graph = Plot.plot({
+const graph_trajectoire = Plot.plot({
  x: {
     label: "points x →",
     grid: true                  // Affiche les lignes verticales de repère
@@ -26,5 +25,27 @@ const graph = Plot.plot({
   ]
 })
 
+
+
+
+
+const graph_energie = Plot.plot({
+  x: {
+      label: "temps →",
+      grid: true // Affiche les lignes verticales de repère
+    },
+  y: {
+    label: "↑ énergie (J)", 
+    grid: true,
+  },
+  marks: [
+    Plot.line(data, { x: "t", y: "ke", stroke: "firebrick" }),// Affiche l'énergie cinetique de Mercure en fonction du temps
+    Plot.line(data, { x: "t", y: "pe", stroke: "steelblue" }),// Affiche l'énergie potentielle de Mercure en fonction du temps
+    Plot.line(data, { x: "t", y: (d) => d.ke + d.pe, stroke: "green" }),// Affiche l'énergie totale en additionnant les énergies cinétique et potentielle de Mercure en fonction du temps
+  ]
+})
+
 // On sélectionne notre div et on y injecte le graphique
-document.getElementById("graph-container").append(graph);
+document.getElementById("graph-container").append(graph_trajectoire);
+
+document.getElementById("graph-container-2").append(graph_energie);
