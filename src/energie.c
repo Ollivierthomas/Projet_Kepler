@@ -10,6 +10,6 @@ double energie_cinetique(struct Vecteurs v, double m_terre) {
 
 double energie_potentielle(struct Vecteurs r, double m_soleil, double m_terre, double g) {
     double n_r = sqrt((r.x * r.x) + (r.y * r.y) + (r.z * r.z));
-    double e_potentielle = g * (m_soleil * m_terre) / n_r;
+    double e_potentielle = -g * (m_soleil * m_terre) / n_r;
     return e_potentielle;
 }
