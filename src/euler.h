@@ -1,3 +1,6 @@
+//// @file euler.h
+/// @brief Déclaration des fonctions pour la méthode d'Euler
+
 #ifndef EULER_H
 #define EULER_H
 

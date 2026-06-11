@@ -1,6 +1,12 @@
+//// @file tab_generic.h
+/// @brief Déclaration des macros pour les tableaux dynamiques génériques
+
 #ifndef TAB_GENERIC_H
 #define TAB_GENERIC_H
 
+
+/// Macro pour définir un tableau dynamique générique
+/// @param type Type des éléments du tableau
 #define Array(type)     \
 struct Array_##type {   \
     type* values;       \
@@ -8,6 +14,9 @@ struct Array_##type {   \
     size_t capacity;    \
 }
 
+/// Macro pour ajouter un élément à un tableau dynamique générique
+/// @param array Tableau dynamique
+/// @param element Élément à ajouter
 #define array_push(array, element) do {\
     if (array.capacity == array.size) {\
         if (array.capacity == 0) {\
@@ -25,6 +34,8 @@ struct Array_##type {   \
     array.size++;\
 } while(0)\
 
+/// Macro pour libérer la mémoire d'un tableau dynamique générique
+/// @param array Tableau dynamique à libérer
 #define array_free(array) do {\
     if (array.values == NULL) {\
         exit(1);\

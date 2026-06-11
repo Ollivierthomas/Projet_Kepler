@@ -1,18 +1,29 @@
+/// @file trajectoire.c
+/// @brief Simulation de la trajectoire de la Terre autour du Soleil en utilisant la méthode d'Euler
+
 #include "energie.h"
 #include "euler.h"
 #include "vectors.h"
 #include "tab_generic.h"
 #include <math.h>
+#include <raylib.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+
+/// Exporte les données de la simulation dans un fichier JSON
+/// @param filename Nom du fichier de sortie
+/// @param array_positions Tableau dynamique contenant les positions de la Terre
+/// @param array_cinetique Tableau dynamique contenant les énergies cinétiques de la Terre
+/// @param array_potentielle Tableau dynamique contenant les énergies potentielles de la Terre
+/// @param h Pas de temps utilisé dans la simulation   
 void export_json(char* filename, Array(Vecteurs)* array_positions, Array(double)* array_cinetique, Array(double)* array_potentielle, double h) {
     FILE *f = fopen(filename, "w");
 
     if (f == NULL) {
-        printf("Erreur ouverture fichier JSON\n");
-        return;
+        perror("Erreur ouverture fichier JSON\n");
+        exit(EXIT_FAILURE);
     }
 
     fprintf(f, "[\n");
@@ -34,21 +45,25 @@ void export_json(char* filename, Array(Vecteurs)* array_positions, Array(double)
 
 int main() {
     double G = 6.67430e-11;
-    double m_soleil = 1.9884e30;
-    double m_terre = 5.9736e24;
+    double m_soleil = 1.989e30;
+    double m_terre = 5.972e24;
 
-    double r_per = 147098291e3; // périhélie
-    double a = 149597887.5e3;
-    double e = 0.01671022;
+    double r_per = 147.09e9; // périhélie
+    double r_aph = 152.1e9; // aphélie
+
+    double a = (r_per + r_aph) / 2.0;
+    double e = (r_aph - r_per) / (r_aph + r_per);
 
     double v_per = sqrt((G * m_soleil * (1.0 + e)) / (a * (1.0 - e)));
 
+    double h = 600.0;
+
+    double T = 2.0 * PI *sqrt((a * a * a) / (G * m_soleil));
+
+    size_t n = (size_t)round(T / h);
+
     Vecteurs r = {.x = r_per, .y = 0, .z = 0};
     Vecteurs v = {.x = 0, .y = v_per, .z = 0};
-
-    double h = 3600.0;
-    double T = 365.25 * 24.0 * 3600.0; // 1 an en secondes
-    int n = (int)(T / h);
 
     Array(Vecteurs) array_positions = {0};
     Array(Vecteurs) array_vitesses = {0};
@@ -63,14 +78,14 @@ int main() {
     array_push(array_potentielle, energie_potentielle(r, m_soleil, m_terre, G));
 
 
-    for (int i = 1; i <= n; i++) {
+    for (size_t i = 1; i <= n; i++) {
         Vecteurs r_old = array_positions.values[array_positions.size - 1];
         Vecteurs v_old = array_vitesses.values[array_vitesses.size - 1];
 
         Vecteurs a_old = accelerations(G, m_soleil, r_old);
 
-        Vecteurs r_next = positions(r_old, h, v_old);
         Vecteurs v_next = vitesses(v_old, h, a_old);
+        Vecteurs r_next = positions(r_old, h, v_old);
 
         array_push(array_positions, r_next);
         array_push(array_vitesses, v_next);
@@ -79,7 +94,22 @@ int main() {
         array_push(array_potentielle, energie_potentielle(r_next, m_soleil, m_terre, G));
     }
     
+    array_push(array_positions, r);
+    array_push(array_vitesses, v);
+
     export_json("../website/data_terre.json", &array_positions, &array_cinetique, &array_potentielle, h);
+
+    Vecteurs debut = array_positions.values[0];
+    Vecteurs fin = array_positions.values[array_positions.size - 1];
+
+    double ecart = sqrt(
+        (fin.x - debut.x) * (fin.x - debut.x) +
+        (fin.y - debut.y) * (fin.y - debut.y) +
+        (fin.z - debut.z) * (fin.z - debut.z)
+    );
+
+    printf("Ecart debut-fin = %.6e m\n", ecart);
+    printf("Ecart debut-fin = %.6e km\n", ecart / 1000.0);
 
     array_free(array_positions);
     array_free(array_vitesses);
