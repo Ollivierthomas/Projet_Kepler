@@ -45,7 +45,6 @@ const graph_trajectoire = Plot.plot({
   
     Plot.line(data, { x: "x", y: "y"  }),// Affiche la trajectoire de la Terre en 2D (x et y)
     
-    
   ]
 })
 
