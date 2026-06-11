@@ -94,6 +94,9 @@ int main() {
         array_push(array_potentielle, energie_potentielle(r_next, m_soleil, m_terre, G));
     }
     
+    array_push(array_positions, r);
+    array_push(array_vitesses, v);
+
     export_json("../website/data_terre.json", &array_positions, &array_cinetique, &array_potentielle, h);
 
     Vecteurs debut = array_positions.values[0];
