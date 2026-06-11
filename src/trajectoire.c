@@ -99,18 +99,6 @@ int main() {
 
     export_json("../website/data_terre.json", &array_positions, &array_cinetique, &array_potentielle, h);
 
-    Vecteurs debut = array_positions.values[0];
-    Vecteurs fin = array_positions.values[array_positions.size - 1];
-
-    double ecart = sqrt(
-        (fin.x - debut.x) * (fin.x - debut.x) +
-        (fin.y - debut.y) * (fin.y - debut.y) +
-        (fin.z - debut.z) * (fin.z - debut.z)
-    );
-
-    printf("Ecart debut-fin = %.6e m\n", ecart);
-    printf("Ecart debut-fin = %.6e km\n", ecart / 1000.0);
-
     array_free(array_positions);
     array_free(array_vitesses);
     array_free(array_cinetique);
