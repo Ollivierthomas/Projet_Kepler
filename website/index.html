@@ -7,14 +7,30 @@
   <script src="d3.js"></script>
   <script src="plot.js"></script>
   <script src="graph.js" type="module"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <h1>Évolution de la valeur en fonction du temps</h1>
   
-  <div id="graph-container"></div>
+  <h1>la Terre autour du Soleil</h1>
+  <div class="title-line"></div>
 
-  <div id="graph-container-2"></div>
+  <main>
+    <section class="graph-card">
+      <div class="graph-card-header">
+        <span class="dot dot--amber"></span>
+        <span class="label">Orbite terrestre</span>
+        <span class="meta">365,25 j</span>
+      </div>
+      <div id="graph-container"></div>
+    </section>
 
+    <section class="graph-card">
+      <div class="graph-card-header">
+        <span class="dot dot--blue"></span>
+        <span class="label">Données temporelles</span>
+      </div>
+      <div id="graph-container-2"></div>
+    </section>
+  </main>
 </body>
 </html>
