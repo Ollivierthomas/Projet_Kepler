@@ -61,8 +61,8 @@ int main(void)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenWidth = 900;
+    const int screenHeight = 550;
 
     const float sunRadius = 4.0f;
     const float earthRadius = 0.6f;
@@ -137,12 +137,12 @@ int main(void)
                         DrawSphereBasic(BLUE);
                     rlPopMatrix();   
 
-                    // rlRotatef(moonOrbitRotation, 0.0f, 1.0f, 0.0f);     // Rotation for Moon orbit around Earth
-                    // rlTranslatef(moonOrbitRadius, 0.0f, 0.0f);          // Translation for Moon orbit
-                    // rlRotatef(moonRotation, 0.0f, 1.0f, 0.0f);          // Rotation for Moon itself
-                    // rlScalef(moonRadius, moonRadius, moonRadius);       // Scale Moon
+                    rlRotatef(moonOrbitRotation, 0.0f, 1.0f, 0.0f);     // Rotation for Moon orbit around Earth
+                    rlTranslatef(moonOrbitRadius, 0.0f, 0.0f);          // Translation for Moon orbit
+                    rlRotatef(moonRotation, 0.0f, 1.0f, 0.0f);          // Rotation for Moon itself
+                    rlScalef(moonRadius, moonRadius, moonRadius);       // Scale Moon
 
-                    // DrawSphereBasic(LIGHTGRAY);                         // Draw the Moon
+                    DrawSphereBasic(LIGHTGRAY);                         // Draw the Moon
                 rlPopMatrix();
 
                 // Some reference elements (not affected by previous matrix transformations)
