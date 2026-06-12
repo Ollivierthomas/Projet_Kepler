@@ -5,22 +5,13 @@
 #include "euler.h"
 #include "vectors.h"
 #include "tab_generic.h"
+#include "trajectoire.h"
 
 #include <math.h>
 #include <raylib.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-
-// Structure pour stocker les paramètres d'une planète
-typedef struct Planete {
-    const char* nom;
-    double masse;
-    double r_per;
-    double r_aph;
-} Planete;
-
 
 /// Exporte les données de la simulation pour une planète donnée dans un fichier JSON
 /// @param filename Nom du fichier de sortie
@@ -60,7 +51,7 @@ void export_json_planete(char* filename, Array(Vecteurs)* array_positions, Array
 /// @param G Constante gravitationnelle
 /// @param m_soleil Masse du Soleil
 
-void simuler_planete(Planete planete, double G, double m_soleil){
+Array(Vecteurs) simuler_planete(Planete planete, double G, double m_soleil) {
     double r_per = planete.r_per; // périhélie
     double r_aph = planete.r_aph; // aphélie
 
@@ -109,42 +100,14 @@ void simuler_planete(Planete planete, double G, double m_soleil){
         array_push(array_cinetique, energie_cinetique(v_next, planete.masse));
         array_push(array_potentielle, energie_potentielle(r_next, m_soleil, planete.masse, G));
     }
-    // Génération du nom de fichier pour la planète
-    char filename[128];
-    snprintf(filename, sizeof(filename), "planetes/data_%s.json", planete.nom);
-    // Exportation des données de la simulation dans un fichier JSON
-    export_json_planete(filename, &array_positions, &array_cinetique, &array_potentielle, h);
+
+    array_push(array_positions, r);
+    array_push(array_vitesses, v);
+
+    return array_positions;
 
     array_free(array_positions);
     array_free(array_vitesses);
     array_free(array_cinetique);
     array_free(array_potentielle);
-
-
-}
-
-/// Point d'entrée du programme
-int main() {
-    double G = 6.67430e-11;
-    double m_soleil = 1.989e30;
-
-    struct Planete planetes[] = {
-    { "mercure", 3.3011e23, 46.00e9,   69.82e9 },
-    { "venus",   4.8675e24, 107.48e9, 108.94e9 },
-    { "terre",   5.9720e24, 147.09e9, 152.10e9 },
-    { "mars",    6.4171e23, 206.62e9, 249.23e9 },
-    { "jupiter", 1.8982e27, 740.52e9, 816.62e9 },
-    { "saturne", 5.6834e26, 1352.55e9, 1514.50e9 },
-    { "uranus",  8.6810e25, 2741.30e9, 3003.62e9 },
-    { "neptune", 1.02413e26, 4444.45e9, 4545.67e9 }
-    };
-
-    size_t nb_planetes = sizeof(planetes)/sizeof(planetes[0]);
-
-    for (size_t i = 0; i < nb_planetes; i++) {
-        simuler_planete(planetes[i], G, m_soleil);
-    }
-
-    return 0;
-    
 }
