@@ -24,6 +24,7 @@ struct Planete planete[] = {
 
 int nb_planetes = sizeof(planete) / sizeof(planete[0]);
 
+<<<<<<< HEAD:src/systeme.c
 Color couleurs_planetes[] = {
     GRAY,
     ORANGE,
@@ -33,6 +34,36 @@ Color couleurs_planetes[] = {
     GOLD,
     SKYBLUE,
     DARKBLUE
+=======
+typedef struct Planete {
+    char* nom;
+    char* fichier;
+    char* texture_fichier;
+    struct Etat* etats;
+    int nb_etats;
+    int index;
+    int max_points;
+    int parent;
+    float distance_scale;
+
+    float rayon;
+    Color couleur;
+
+    Texture2D texture;
+    Model modele;
+} Planete;
+
+Planete planetes[] = {
+    {"Mercure", "./planetes/data_mercure.json","texture/mercure.jpg", NULL, 0, 0, 0, -1, 1.0f, 0.20f, GRAY},
+    {"Venus", "./planetes/data_venus.json", "texture/venus.jpg", NULL, 0, 0, 0, -1, 1.0f, 0.45f, ORANGE},
+    {"Terre", "./planetes/data_terre.json", "texture/terre.jpg", NULL, 0, 0, 0, -1, 1.0f, 0.50f, BLUE},
+    {"Lune", "./planetes/data_lune.json", "texture/lune.jpg", NULL, 0, 0, 0, 2, 40.0f, 0.16f, LIGHTGRAY},
+    {"Mars", "./planetes/data_mars.json", "texture/mars.jpg", NULL, 0, 0, 0, -1, 1.0f, 0.30f, RED},
+    {"Jupiter", "./planetes/data_jupiter.json", "texture/jupiter.jpg", NULL, 0, 0, 0, -1, 1.0f, 1.20f, BROWN},
+    {"Saturne", "./planetes/data_saturne.json", "texture/saturne.jpg", NULL, 0, 0, 0, -1, 1.0f, 1.00f, GOLD},
+    {"Uranus", "./planetes/data_uranus.json", "texture/uranus.jpg", NULL, 0, 0, 0, -1, 1.0f, 0.75f, SKYBLUE},
+    {"Neptune", "./planetes/data_neptune.json", "texture/neptune.jpg", NULL, 0, 0, 0, -1, 1.0f, 0.75f, DARKBLUE}
+>>>>>>> 97ef667 (ajout des textures):src/systeme_solaire.c
 };
 
 float rayons_planetes[] = {
@@ -51,6 +82,7 @@ float rayons_planetes[] = {
 //------------------------------------------------------------------------------------
 void DrawSphereBasic(Color color);      // Draw sphere without any matrix transformation
 
+void DrawSunShiny(Model sun_Model, float radius);
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
@@ -76,7 +108,11 @@ int main(void)
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "raylib [models] example - rlgl solar system");
+    
+    Model sunModel = LoadModelFromMesh(GenMeshSphere(1.0f, 32, 32));
+    Texture2D sunTexture = LoadTexture("texture/soleil.jpg");
 
+<<<<<<< HEAD:src/systeme.c
     int monitor = GetCurrentMonitor();
     int monitorWidth = GetMonitorWidth(monitor);
     int monitorHeight = GetMonitorHeight(monitor);
@@ -84,6 +120,28 @@ int main(void)
     SetWindowPosition((monitorWidth - screenWidth) / 2, (monitorHeight - screenHeight) / 2);
     RestoreWindow();
 
+=======
+    if (IsTextureValid(sunTexture)) {
+        SetMaterialTexture(&sunModel.materials[0], MATERIAL_MAP_DIFFUSE, sunTexture);
+    }
+    for (int i=0;i<nb_planetes;i++){
+        planetes[i].modele = LoadModelFromMesh(GenMeshSphere(1.0f,32,32));
+        planetes[i].texture=LoadTexture(planetes[i].texture_fichier);
+
+        if (IsTextureValid(planetes[i].texture)) {
+        SetMaterialTexture(
+            &planetes[i].modele.materials[0],
+            MATERIAL_MAP_DIFFUSE,
+            planetes[i].texture
+        );
+        }
+         else {
+        printf("Texture non chargee pour %s : %s\n",planetes[i].nom,planetes[i].texture_fichier);
+        }
+
+
+    }
+>>>>>>> 97ef667 (ajout des textures):src/systeme_solaire.c
     // Define the camera to look into our 3d world
     Camera camera = { 0 };
     camera.position = (Vector3){ 25.0f, 25.0f, 25.0f }; // Camera position
@@ -110,14 +168,11 @@ int main(void)
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-            ClearBackground(RAYWHITE);
+            ClearBackground(BLACK);
 
             BeginMode3D(camera);
 
-                rlPushMatrix();
-                    rlScalef(sunRadius, sunRadius, sunRadius);          // Scale Sun
-                    DrawSphereBasic(GOLD);                              // Draw the Sun
-                rlPopMatrix();
+                DrawSunShiny(sunModel, sunRadius);
 
                 rlPushMatrix();
                     for (int i = 0; i < nb_planetes; i++) {
@@ -130,11 +185,17 @@ int main(void)
                             (float)(position.y * SCALE)
                         };
 
+<<<<<<< HEAD:src/systeme.c
                         rlPushMatrix();
                             rlTranslatef(pos.x, pos.y, pos.z);
                             rlScalef(rayons_planetes[i], rayons_planetes[i], rayons_planetes[i]);
                             DrawSphereBasic(couleurs_planetes[i]);
                         rlPopMatrix();
+=======
+                        float rotation = GetTime() * 20.0f;
+
+                        DrawModelEx(planetes[i].modele,pos,(Vector3){ 0.0f, 1.0f, 0.0f },rotation,(Vector3){planetes[i].rayon,planetes[i].rayon,planetes[i].rayon},WHITE);
+>>>>>>> 97ef667 (ajout des textures):src/systeme_solaire.c
                     }
                 rlPopMatrix();
 
@@ -172,10 +233,18 @@ int main(void)
     }
 
     for (int i = 0; i < nb_planetes; i++) {
+<<<<<<< HEAD:src/systeme.c
         array_free(planetes.values[i]);
+=======
+        free(planetes[i].etats);
+        UnloadTexture(planetes[i].texture);
+        UnloadModel(planetes[i].modele);
+>>>>>>> 97ef667 (ajout des textures):src/systeme_solaire.c
     }
     array_free(planetes);
 
+    UnloadTexture(sunTexture);
+    UnloadModel(sunModel);
     // De-Initialization
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context
@@ -227,4 +296,63 @@ void DrawSphereBasic(Color color)
             }
         }
     rlEnd();
+}
+
+void DrawSunShiny(Model sunModel, float radius)
+{
+    float time = GetTime();
+    float pulse = 1.0f + 0.08f * sinf(time * 3.0f);
+
+    // Halo lumineux autour du soleil
+    BeginBlendMode(BLEND_ADDITIVE);
+
+        DrawSphereEx(
+            (Vector3){ 0.0f, 0.0f, 0.0f },
+            radius * 1.45f * pulse,
+            32,
+            32,
+            Fade(ORANGE, 0.20f)
+        );
+
+        DrawSphereEx(
+            (Vector3){ 0.0f, 0.0f, 0.0f },
+            radius * 2.10f * pulse,
+            32,
+            32,
+            Fade(YELLOW, 0.10f)
+        );
+
+        // Rayons autour du soleil dans le plan XZ
+        int rayCount = 32;
+
+        for (int i = 0; i < rayCount; i++) {
+            float angle = 2.0f * PI * i / rayCount;
+            float rayLength = radius * (1.9f + 0.25f * sinf(time * 4.0f + i));
+
+            Vector3 start = {
+                cosf(angle) * radius * 1.15f,
+                0.0f,
+                sinf(angle) * radius * 1.15f
+            };
+
+            Vector3 end = {
+                cosf(angle) * rayLength,
+                0.0f,
+                sinf(angle) * rayLength
+            };
+
+            DrawLine3D(start, end, Fade(GOLD, 0.85f));
+        }
+
+    EndBlendMode();
+
+    // Corps du soleil texturé
+    DrawModelEx(
+        sunModel,
+        (Vector3){ 0.0f, 0.0f, 0.0f },
+        (Vector3){ 0.0f, 1.0f, 0.0f },
+        time * 8.0f,
+        (Vector3){ radius, radius, radius },
+        WHITE
+    );
 }
