@@ -62,4 +62,10 @@ html/
 latex/
 
 #planetes
+<<<<<<< HEAD
 src/planetes/*.json
+=======
+src/planetes
+
+
+>>>>>>> e2b2eb7 (modification du gitignore)
