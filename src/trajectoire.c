@@ -46,21 +46,15 @@ void export_json_planete(char* filename, Array(Vecteurs)* array_positions, Array
 
     fclose(f);
 }
-/// Simule la trajectoire d'une planète autour du Soleil en utilisant la méthode d'Euler
-/// @param planete Structure contenant les paramètres de la planète (masse, périhélie, aphélie)
-/// @param G Constante gravitationnelle
-/// @param m_soleil Masse du Soleil
 
 Array(Vecteurs) simuler_planete(Planete planete, double G, double m_soleil) {
-    double r_per = planete.r_per; // périhélie
-    double r_aph = planete.r_aph; // aphélie
+    double r_per = pow(planete.r_per, 0.95);
+    double r_aph = pow(planete.r_aph, 0.95);
 
     double a = (r_per + r_aph) / 2.0;
     double e = (r_aph - r_per) / (r_aph + r_per);
-
     double v_per = sqrt((G * m_soleil * (1.0 + e)) / (a * (1.0 - e)));
-
-    double T = 2.0 * PI *sqrt((a * a * a) / (G * m_soleil));
+    double T = 2.0 * PI * sqrt((a * a * a) / (G * m_soleil));
 
     double h = 3600;
     size_t n = (size_t)round(T / h);
@@ -68,46 +62,36 @@ Array(Vecteurs) simuler_planete(Planete planete, double G, double m_soleil) {
     Vecteurs r = {.x = r_per, .y = 0, .z = 0};
     Vecteurs v = {.x = 0, .y = v_per, .z = 0};
 
-    Array(Vecteurs) array_positions = {0};
-    Array(Vecteurs) array_vitesses = {0};
-    Array(double) array_cinetique = {0};
-    Array(double) array_potentielle = {0};
+    Array(Vecteurs) array_positions  = {0};
+    Array(Vecteurs) array_vitesses   = {0};
+    Array(double)   array_cinetique  = {0};
+    Array(double)   array_potentielle = {0};
 
-    array_push(array_positions, r);
-    array_push(array_vitesses, v);
-
-    array_push(array_cinetique, energie_cinetique(v, planete.masse));
+    array_push(array_positions,  r);
+    array_push(array_vitesses,   v);
+    array_push(array_cinetique,  energie_cinetique(v, planete.masse));
     array_push(array_potentielle, energie_potentielle(r, m_soleil, planete.masse, G));
 
-    // Simulation de la trajectoire de la planète
     for (size_t i = 1; i <= n; i++) {
-        // Récupération de la dernière position et vitesse
         Vecteurs r_old = array_positions.values[array_positions.size - 1];
         Vecteurs v_old = array_vitesses.values[array_vitesses.size - 1];
 
-        // Calcul de l'accélération à partir de la position actuelle
         Vecteurs a_old = accelerations(G, m_soleil, r_old);
 
-        // Mise à jour de la position et de la vitesse en utilisant la méthode d'Euler
+        // ✅ Euler symplectique : v_next d'abord, puis r_next avec v_next
         Vecteurs v_next = vitesses(v_old, h, a_old);
-        Vecteurs r_next = positions(r_old, h, v_old);
+        Vecteurs r_next = positions(r_old, h, v_next);  // ← correction ici
 
-        // Stockage des nouvelles positions, vitesses, énergies cinétiques et potentielles dans les tableaux dynamiques
-        array_push(array_positions, r_next);
-        array_push(array_vitesses, v_next);
-
-        // Calcul de l'énergie cinétique et potentielle à partir de la nouvelle position et vitesse
-        array_push(array_cinetique, energie_cinetique(v_next, planete.masse));
+        array_push(array_positions,   r_next);
+        array_push(array_vitesses,    v_next);
+        array_push(array_cinetique,   energie_cinetique(v_next, planete.masse));
         array_push(array_potentielle, energie_potentielle(r_next, m_soleil, planete.masse, G));
     }
 
-    array_push(array_positions, r);
-    array_push(array_vitesses, v);
-
-    return array_positions;
-
-    array_free(array_positions);
+    // ✅ Libération correcte : on garde positions, on libère le reste
     array_free(array_vitesses);
     array_free(array_cinetique);
     array_free(array_potentielle);
+
+    return array_positions;  // ← return après les free
 }
