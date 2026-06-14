@@ -29,6 +29,12 @@ systeme2.o: systeme2.c trajectoire.h vectors.h tab_generic.h
 systeme2: systeme2.o trajectoire.o energie.o euler.o
 	gcc systeme2.o trajectoire.o energie.o euler.o -o systeme2 -std=c23 $(RAYLIB_FLAGS)
 
+systeme2.o: systeme2.c trajectoire.h vectors.h tab_generic.h
+	gcc -pipe -c systeme2.c -std=c23
+
+systeme2: systeme2.o trajectoire.o energie.o euler.o
+	gcc systeme2.o trajectoire.o energie.o euler.o -o systeme2 -std=c23 $(RAYLIB_FLAGS)
+
 kepler: energie.o euler.o trajectoire.o
 	gcc -o kepler energie.o euler.o trajectoire.o -lm -std=c23
 
