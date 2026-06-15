@@ -86,14 +86,14 @@ float rayons_affichage_planetes[] = {
 };
 
 const char *fichiers_textures_planetes[] = {
-    "texture/mercure.png",
-    "texture/venus.png",
-    "texture/terre.png",
-    "texture/mars.png",
-    "texture/jupiter.png",
-    "texture/saturne.png",
-    "texture/uranus.png",
-    "texture/neptune.png"
+    "assets/texture/mercure.png",
+    "assets/texture/venus.png",
+    "assets/texture/terre.png",
+    "assets/texture/mars.png",
+    "assets/texture/jupiter.png",
+    "assets/texture/saturn.png",
+    "assets/texture/uranus.png",
+    "assets/texture/neptune.png"
 };
 
 void dessiner_soleil_texture(Model modele_soleil, float rayon, int texture_chargee);
@@ -185,7 +185,7 @@ int main(void) {
     const float rayon_affichage_soleil = 10.5f;
 
     Model modele_soleil = LoadModelFromMesh(GenMeshSphere(1.0f, 32, 32));
-    Texture2D texture_soleil = LoadTexture("texture/soleil.png");
+    Texture2D texture_soleil = LoadTexture("assets/texture/soleil.png");
     int texture_soleil_chargee = texture_soleil.id > 0;
 
     if (texture_soleil_chargee) {
@@ -219,17 +219,17 @@ int main(void) {
     }
 
     Model modele_lune = LoadModelFromMesh(GenMeshSphere(1.0f, 32, 32));
-    Texture2D texture_lune = LoadTexture("texture/lune.png");
+    Texture2D texture_lune = LoadTexture("assets/texture/lune.png");
     int texture_lune_chargee = texture_lune.id > 0;
 
     if (texture_lune_chargee) {
         SetMaterialTexture(&modele_lune.materials[0], MATERIAL_MAP_DIFFUSE, texture_lune);
     } else {
-        printf("Texture non chargee pour la Lune : texture/lune.png\n");
+        printf("Texture non chargee pour la Lune : assets/texture/lune.png\n");
     }
 
     // Skybox avec texture etoile.png
-    Texture2D textureSkybox = LoadTexture("texture/etoile.png");
+    Texture2D textureSkybox = LoadTexture("assets/texture/etoile.png");
     Model skybox = LoadModelFromMesh(GenMeshSphere(800.0f, 64, 64));
     skybox.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textureSkybox;
 
@@ -363,9 +363,6 @@ int main(void) {
             DrawText("SYSTEME SOLAIRE", 10, 10, 20, RAYWHITE);
             DrawText("Fleches : deplacer  |  Haut/Bas : zoom", 10, 35, 14, GRAY);
             DrawFPS(10, hauteur_fenetre - 25);
-
-            printf("Texture uranus id: %d\n", textures_planetes[7].id);
-;
 
 
         EndDrawing();
