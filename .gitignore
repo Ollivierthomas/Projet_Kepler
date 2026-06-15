@@ -62,4 +62,6 @@ html/
 latex/
 
 #planetes
-src/planetes/*.json
+
+src/planetes
+
