@@ -13,12 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/// Exporte les données de la simulation pour une planète donnée dans un fichier JSON
-/// @param filename Nom du fichier de sortie
-/// @param array_positions Tableau dynamique contenant les positions de la planète
-/// @param array_cinetique Tableau dynamique contenant les énergies cinétiques de la planète
-/// @param array_potentielle Tableau dynamique contenant les énergies potentielles de la planète
-/// @param h Pas de temps utilisé dans la simulation
+
 void export_json_planete(char* filename, Array(Vecteurs)* array_positions, Array(double)* array_cinetique, Array(double)* array_potentielle, double h) {
     // Ouvre le fichier en mode écriture
     FILE *f = fopen(filename, "w");
