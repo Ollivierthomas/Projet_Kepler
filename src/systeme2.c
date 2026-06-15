@@ -20,24 +20,31 @@
 
 // Rayon orbital de la lune (~384 000 km) -> offset visuel
 // sqrt(384e6) * 3.5e-4 * LUNE_VIS_SCALE ≈ 0.55 u (visible, pas trop grand)
-#define LUNE_VIS_SCALE 1.0f
+#define LUNE_VIS_SCALE 1.5f
 
 #define INDEX_TERRE 2
 
 typedef Array(Vecteurs) Array_Vecteurs;
 
-static inline float dist_visuelle(double r_metres)
-{
-    if (r_metres <= 0.0) return 0.0f;
+float dist_visuelle(double r_metres) {
+    if (r_metres <= 0.0) {
+        return 0.0f;
+    }
     return (float)(sqrt(r_metres) * SCALE_SQRT);
 }
 
-static inline Vector3 pos_vers_3d(Vecteurs pos_sim)
-{
+Vector3 pos_vers_3d(Vecteurs pos_sim) {
     double r  = sqrt(pos_sim.x * pos_sim.x + pos_sim.y * pos_sim.y);
     float r_vis = dist_visuelle(r);
-    float nx  = (r > 0.0) ? (float)(pos_sim.x / r) : 1.0f;
-    float ny  = (r > 0.0) ? (float)(pos_sim.y / r) : 0.0f;
+    float nx;
+    float ny;
+    if (r > 0.0) {
+        nx = (float)(pos_sim.x / r);
+        ny = (float)(pos_sim.y / r);
+    } else {
+        nx = 1.0f;
+        ny = 0.0f;
+    }
     return (Vector3){ nx * r_vis, 0.0f, ny * r_vis };
 }
 
@@ -112,8 +119,15 @@ int main(void) {
         Vecteurs pl = trajectoire_lune.values[k];
         double r_l  = sqrt(pl.x * pl.x + pl.y * pl.y);
         float r_l_vis = (float)(sqrt(r_l) * SCALE_SQRT * LUNE_VIS_SCALE);
-        float nlx = (r_l > 0.0) ? (float)(pl.x / r_l) : 1.0f;
-        float nly = (r_l > 0.0) ? (float)(pl.y / r_l) : 0.0f;
+        float nlx;
+        float nly;
+        if (r_l > 0.0) {
+            nlx = (float)(pl.x / r_l);
+            nly = (float)(pl.y / r_l);
+        } else {
+            nlx = 1.0f;
+            nly = 0.0f;
+        }
         lune_vis[k] = (Vector3){ nlx * r_l_vis, 0.0f, nly * r_l_vis };
     }
 
