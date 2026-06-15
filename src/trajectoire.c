@@ -42,7 +42,7 @@ void export_json_planete(char* filename, Array(Vecteurs)* array_positions, Array
     fclose(f);
 }
 
-Array(Vecteurs) simuler_planete(Planete planete, double G, double m_soleil) {
+Array(Vecteurs) simuler_planete( Planete planete, double G, double m_soleil) {
     double r_per = pow(planete.r_per, 0.95);
     double r_aph = pow(planete.r_aph, 0.95);
 

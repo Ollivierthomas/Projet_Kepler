@@ -1,6 +1,7 @@
 all: systeme_solaire systeme2
+RAYLIB_FLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
-RAYLIB_FLAGS = -I/usr/local/include -L/usr/local/lib -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -lXrandr -lXi -lXcursor -lXinerama
+all: systeme2
 
 energie.o: energie.c energie.h vectors.h
 	gcc -pipe -c energie.c
@@ -16,6 +17,8 @@ systeme_solaire.o: systeme_solaire.c trajectoire.h vectors.h tab_generic.h
 
 systeme_solaire: systeme_solaire.o trajectoire.o energie.o euler.o
 	gcc systeme_solaire.o trajectoire.o energie.o euler.o -o systeme_solaire -std=c23 $(RAYLIB_FLAGS)
+
+	gcc -pipe -c trajectoire.c -lm -std=c23
 
 systeme.o: systeme.c trajectoire.h vectors.h tab_generic.h
 	gcc -pipe -c systeme.c -std=c23
@@ -40,3 +43,5 @@ kepler: energie.o euler.o trajectoire.o
 
 clean:
 	rm -f *.o kepler systeme systeme_solaire
+clean:
+	rm -f *.o kepler systeme systeme2
