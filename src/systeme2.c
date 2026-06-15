@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "raymath.h"
 #include "rlgl.h"
 #include <math.h>
 #include <stdio.h>
@@ -323,7 +324,8 @@ int main(void) {
 
                     Vector3 position_planete = trajectoires_affichage[i][index_planete];
 
-                    float rotation_planete = (float)GetTime() * 20.0f;
+                    float rotation_planete =  (float)GetTime() * 20.0f;
+                    modeles_planetes[i].transform = MatrixRotateX(PI/2.0);
                     float rayon_planete = rayons_affichage_planetes[i];
 
                     DrawModelEx(
@@ -347,7 +349,7 @@ int main(void) {
 
                 Vector3 position_lune = {position_terre.x + position_lune_relative.x, 0.0f, position_terre.z + position_lune_relative.z};
 
-                float rotation_lune = (float)GetTime() * 20.0f;
+                float rotation_lune = 90.0f + (float)GetTime() * 20.0f;
 
                 DrawModelEx(
                     modele_lune,
