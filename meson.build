@@ -13,7 +13,7 @@ sources = files(
   'src/euler.c',  
   'src/energie.c',
   'src/trajectoire.c',
-  'src/systeme2.c',
+  'src/systeme_solaire.c',
 )
 
 executable('kepler', sources, dependencies : [m_dep, raylib, GL, pthread, dl, rt, X11], override_options : ['c_std=c23'])
