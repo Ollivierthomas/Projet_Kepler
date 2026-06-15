@@ -1,4 +1,4 @@
-all:  systeme systeme2
+all: systeme_solaire systeme2
 
 RAYLIB_FLAGS = -I/usr/local/include -L/usr/local/lib -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -lXrandr -lXi -lXcursor -lXinerama
 
