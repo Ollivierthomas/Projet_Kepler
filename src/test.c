@@ -1,5 +1,4 @@
 #include "raylib.h"
-#include "raymath.h"
 #include "rlgl.h"
 #include <math.h>
 #include <stdio.h>
@@ -86,18 +85,6 @@ float rayons_affichage_planetes[] = {
     6.60f  // Neptune
 };
 
-const char *fichiers_textures_planetes[] = {
-    "assets/texture/mercure.png",
-    "assets/texture/venus.png",
-    "assets/texture/terre.png",
-    "assets/texture/mars.png",
-    "assets/texture/jupiter.png",
-    "assets/texture/saturn.png",
-    "assets/texture/uranus.png",
-    "assets/texture/neptune.png"
-};
-
-void dessiner_soleil_texture(Model modele_soleil, float rayon, int texture_chargee);
 void dessiner_sphere_simple(Color couleur);
 
 int main(void) {
@@ -170,6 +157,9 @@ int main(void) {
     size_t index_animation = 0;
     int vitesse_animation = 3;
 
+    float sunRadius = 10.5f;
+    float sunDirection = -0.1f;  // 0.1 = grandit, -0.1 = rétréci
+
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(largeur_fenetre, hauteur_fenetre, "Système Solaire");
     InitAudioDevice();
@@ -182,57 +172,6 @@ int main(void) {
     //     printf("Musique chargee correctement\n");
     //     PlayMusicStream(music);
     // }
-
-    const float rayon_affichage_soleil = 10.5f;
-
-    Model modele_soleil = LoadModelFromMesh(GenMeshSphere(1.0f, 32, 32));
-    Texture2D texture_soleil = LoadTexture("assets/texture/soleil.png");
-    int texture_soleil_chargee = texture_soleil.id > 0;
-
-    if (texture_soleil_chargee) {
-        SetMaterialTexture(&modele_soleil.materials[0], MATERIAL_MAP_DIFFUSE, texture_soleil);
-    } else {
-        printf("Texture non chargee pour le Soleil : texture/soleil.png\n");
-    }
-
-    Model modeles_planetes[NOMBRE_PLANETES];
-    Texture2D textures_planetes[NOMBRE_PLANETES];
-    int textures_planetes_chargees[NOMBRE_PLANETES] = {0};
-
-    for (int i = 0; i < NOMBRE_PLANETES; i++) {
-        modeles_planetes[i] = LoadModelFromMesh(GenMeshSphere(1.0f, 32, 32));
-        textures_planetes[i] = LoadTexture(fichiers_textures_planetes[i]);
-        textures_planetes_chargees[i] = textures_planetes[i].id > 0;
-
-        if (textures_planetes_chargees[i]) {
-            SetMaterialTexture(
-                &modeles_planetes[i].materials[0],
-                MATERIAL_MAP_DIFFUSE,
-                textures_planetes[i]
-            );
-        } else {
-            printf(
-                "Texture non chargee pour %s : %s\n",
-                donnees_planetes[i].nom,
-                fichiers_textures_planetes[i]
-            );
-        }
-    }
-
-    Model modele_lune = LoadModelFromMesh(GenMeshSphere(1.0f, 32, 32));
-    Texture2D texture_lune = LoadTexture("assets/texture/lune.png");
-    int texture_lune_chargee = texture_lune.id > 0;
-
-    if (texture_lune_chargee) {
-        SetMaterialTexture(&modele_lune.materials[0], MATERIAL_MAP_DIFFUSE, texture_lune);
-    } else {
-        printf("Texture non chargee pour la Lune : assets/texture/lune.png\n");
-    }
-
-    // Skybox avec texture etoile.png
-    Texture2D textureSkybox = LoadTexture("assets/texture/etoile.png");
-    Model skybox = LoadModelFromMesh(GenMeshSphere(800.0f, 64, 64));
-    skybox.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textureSkybox;
 
     Camera camera = {0};
     camera.position = (Vector3){0.0f, 550.0f, 550.0f};
@@ -276,21 +215,31 @@ int main(void) {
 
             BeginMode3D(camera);
 
-                // --- Dessin du système solaire ---
-                //skybox
-                rlDisableBackfaceCulling();
-                rlDisableDepthMask();
-                rlDisableDepthTest();
-                DrawModel(skybox, (Vector3){ 0.0f, 0.0f, 0.0f }, 1.0f, WHITE);
-                rlEnableDepthTest();
-                rlEnableDepthMask();
-                rlEnableBackfaceCulling();
+                // Animation : rétréci puis grossit en blanc
+                sunRadius -= 0.01f;  // Rétréci toujours
 
-                dessiner_soleil_texture(
-                    modele_soleil,
-                    rayon_affichage_soleil,
-                    texture_soleil_chargee
-                );
+                // Quand atteint le minimum, recommence à grossir
+                if (sunRadius < 10.5f) {
+                    sunRadius = 10.5f;
+                    sunDirection = 0.2f;  // Change en mode grossissement
+                }
+
+                // Grossit jusqu'à énorme
+                if (sunDirection > 0.0f) {
+                    sunRadius += sunDirection;
+                    if (sunRadius > 200.0f) {
+                        sunRadius = 35.5f;
+                        sunDirection = -0.1f;  // Retour au rétréci
+                    }
+                }
+
+                // Choisir couleur
+                Color sunColor = (sunDirection > 0.0f) ? WHITE : BLUE;
+
+                rlPushMatrix();
+                    rlScalef(sunRadius, sunRadius, sunRadius);
+                    dessiner_sphere_simple(sunColor);
+                rlPopMatrix();
 
                 for (int i = 0; i < NOMBRE_PLANETES; i++) {
                     size_t nombre_points = trajectoires_planetes.values[i].size;
@@ -324,18 +273,21 @@ int main(void) {
 
                     Vector3 position_planete = trajectoires_affichage[i][index_planete];
 
-                    float rotation_planete =  (float)GetTime() * 20.0f;
-                    modeles_planetes[i].transform = MatrixRotateX(PI/2.0);
-                    float rayon_planete = rayons_affichage_planetes[i];
+                    rlPushMatrix();
+                        rlTranslatef(
+                            position_planete.x,
+                            position_planete.y,
+                            position_planete.z
+                        );
 
-                    DrawModelEx(
-                        modeles_planetes[i],
-                        position_planete,
-                        (Vector3){0.0f, 1.0f, 0.0f},
-                        rotation_planete,
-                        (Vector3){rayon_planete, rayon_planete, rayon_planete},
-                        textures_planetes_chargees[i] ? WHITE : couleurs_planetes[i]
-                    );
+                        rlScalef(
+                            rayons_affichage_planetes[i],
+                            rayons_affichage_planetes[i],
+                            rayons_affichage_planetes[i]
+                        );
+
+                        dessiner_sphere_simple(couleurs_planetes[i]);
+                    rlPopMatrix();
                 }
 
                 size_t nombre_points_terre = trajectoires_planetes.values[INDEX_TERRE].size;
@@ -349,23 +301,23 @@ int main(void) {
 
                 Vector3 position_lune = {position_terre.x + position_lune_relative.x, 0.0f, position_terre.z + position_lune_relative.z};
 
-                float rotation_lune = 90.0f + (float)GetTime() * 20.0f;
+                rlPushMatrix();
+                    rlTranslatef(
+                        position_lune.x,
+                        position_lune.y,
+                        position_lune.z
+                    );
 
-                DrawModelEx(
-                    modele_lune,
-                    position_lune,
-                    (Vector3){0.0f, 1.0f, 0.0f},
-                    rotation_lune,
-                    (Vector3){1.05f, 1.05f, 1.05f},
-                    texture_lune_chargee ? WHITE : LIGHTGRAY
-                );
+                    rlScalef(1.05f, 1.05f, 1.05f);
+
+                    dessiner_sphere_simple(LIGHTGRAY);
+                rlPopMatrix();
 
             EndMode3D();
 
             DrawText("SYSTEME SOLAIRE", 10, 10, 20, RAYWHITE);
             DrawText("Fleches : deplacer  |  Haut/Bas : zoom", 10, 35, 14, GRAY);
             DrawFPS(10, hauteur_fenetre - 25);
-
 
         EndDrawing();
     }
@@ -377,26 +329,7 @@ int main(void) {
     for (int i = 0; i < NOMBRE_PLANETES; i++) {
         array_free(trajectoires_planetes.values[i]);
         free(trajectoires_affichage[i]);
-
-        if (textures_planetes[i].id > 0) {
-            UnloadTexture(textures_planetes[i]);
-        }
-
-        UnloadModel(modeles_planetes[i]);
     }
-
-    if (texture_lune.id > 0) {
-        UnloadTexture(texture_lune);
-    }
-    UnloadModel(modele_lune);
-
-    if (texture_soleil.id > 0) {
-        UnloadTexture(texture_soleil);
-    }
-    UnloadModel(modele_soleil);
-
-    UnloadTexture(textureSkybox);
-    UnloadModel(skybox);
 
     free(trajectoire_lune_affichage);
 
@@ -406,89 +339,6 @@ int main(void) {
     CloseWindow();
 
     return 0;
-}
-
-void dessiner_soleil_texture(Model modele_soleil, float rayon, int texture_chargee) {
-    float temps = (float)GetTime();
-    float pulsation = 1.0f + 0.05f * sinf(temps * 2.5f);
-
-    // --- Noyau texturé en rotation ---
-    DrawModelEx(
-        modele_soleil,
-        (Vector3){0.0f, 0.0f, 0.0f},
-        (Vector3){0.0f, 1.0f, 0.0f},
-        temps * 8.0f,
-        (Vector3){rayon, rayon, rayon},
-        texture_chargee ? WHITE : YELLOW
-    );
-
-    BeginBlendMode(BLEND_ADDITIVE);
-
-        // --- Couronne interne chaude ---
-        DrawSphereEx((Vector3){0}, rayon * 1.25f * pulsation, 32, 32, Fade((Color){255, 180, 30, 255}, 0.35f));
-
-        // --- Couronne externe diffuse ---
-        DrawSphereEx((Vector3){0}, rayon * 1.80f * pulsation, 32, 32, Fade((Color){255, 120, 0, 255}, 0.12f));
-
-        
-
-        // --- Protubérances solaires : arcs 3D dans des plans variés ---
-        int nombre_protuberances = 12;
-        for (int i = 0; i < nombre_protuberances; i++) {
-            float angle_base   = 2.0f * PI * i / nombre_protuberances;
-            float phase        = temps * 1.2f + i * 0.8f;
-            float hauteur      = rayon * (0.25f + 0.20f * sinf(phase));
-            float largeur_arc  = rayon * (0.30f + 0.15f * cosf(phase * 0.7f));
-
-            // Chaque protubérance est dans un plan incliné différent
-            float inclinaison = (float)i / nombre_protuberances * PI;
-
-            Vector3 base_gauche = {
-                cosf(angle_base) * rayon * 1.05f,
-                sinf(inclinaison) * rayon * 0.05f,
-                sinf(angle_base) * rayon * 1.05f
-            };
-
-            Vector3 sommet = {
-                cosf(angle_base) * (rayon + largeur_arc),
-                hauteur * cosf(inclinaison),
-                sinf(angle_base) * (rayon + largeur_arc)
-            };
-
-            Vector3 base_droite = {
-                cosf(angle_base + 0.35f) * rayon * 1.05f,
-                sinf(inclinaison) * rayon * 0.05f,
-                sinf(angle_base + 0.35f) * rayon * 1.05f
-            };
-
-            // Arc en plusieurs segments pour la courbe
-            int segments = 8;
-            for (int s = 0; s < segments; s++) {
-                float t0 = (float)s / segments;
-                float t1 = (float)(s + 1) / segments;
-
-                // Interpolation quadratique de Bézier
-                float u0 = (1-t0)*(1-t0), v0 = 2*(1-t0)*t0, w0 = t0*t0;
-                float u1 = (1-t1)*(1-t1), v1 = 2*(1-t1)*t1, w1 = t1*t1;
-
-                Vector3 p0 = {
-                    u0*base_gauche.x + v0*sommet.x + w0*base_droite.x,
-                    u0*base_gauche.y + v0*sommet.y + w0*base_droite.y,
-                    u0*base_gauche.z + v0*sommet.z + w0*base_droite.z
-                };
-                Vector3 p1 = {
-                    u1*base_gauche.x + v1*sommet.x + w1*base_droite.x,
-                    u1*base_gauche.y + v1*sommet.y + w1*base_droite.y,
-                    u1*base_gauche.z + v1*sommet.z + w1*base_droite.z
-                };
-
-                float alpha = 0.9f * (1.0f - fabsf(t0 + t1 - 1.0f)); // fade aux extrémités
-                DrawLine3D(p0, p1, Fade((Color){255, 160, 40, 255}, alpha));
-            }
-        }
-
-
-    EndBlendMode();
 }
 
 void dessiner_sphere_simple(Color couleur) {
