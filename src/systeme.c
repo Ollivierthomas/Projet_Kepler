@@ -24,7 +24,10 @@ struct Planete planete[] = {
 
 int nb_planetes = sizeof(planete) / sizeof(planete[0]);
 
+<<<<<<< HEAD
 <<<<<<< HEAD:src/systeme.c
+=======
+>>>>>>> 59c9252 (textures des planetes et halo lumineux du soleil et fond etoilé)
 Color couleurs_planetes[] = {
     GRAY,
     ORANGE,
@@ -34,6 +37,7 @@ Color couleurs_planetes[] = {
     GOLD,
     SKYBLUE,
     DARKBLUE
+<<<<<<< HEAD
 =======
 typedef struct Planete {
     char* nom;
@@ -64,6 +68,8 @@ Planete planetes[] = {
     {"Uranus", "./planetes/data_uranus.json", "texture/uranus.jpg", NULL, 0, 0, 0, -1, 1.0f, 0.75f, SKYBLUE},
     {"Neptune", "./planetes/data_neptune.json", "texture/neptune.jpg", NULL, 0, 0, 0, -1, 1.0f, 0.75f, DARKBLUE}
 >>>>>>> 97ef667 (ajout des textures):src/systeme_solaire.c
+=======
+>>>>>>> 59c9252 (textures des planetes et halo lumineux du soleil et fond etoilé)
 };
 
 float rayons_planetes[] = {
@@ -77,12 +83,33 @@ float rayons_planetes[] = {
     0.75f
 };
 
+<<<<<<< HEAD
+=======
+
+
+
+const char *textures_planetes[] = {
+    "texture/mercure.png",
+    "texture/venus.png",
+    "texture/terre.png",
+    "texture/mars.png",
+    "texture/jupiter.png",
+    "texture/saturn.png",
+    "texture/uranus.png",
+    "texture/neptune.png"
+};
+
+
+>>>>>>> 59c9252 (textures des planetes et halo lumineux du soleil et fond etoilé)
 //------------------------------------------------------------------------------------
 // Module Functions Declaration
 //------------------------------------------------------------------------------------
 void DrawSphereBasic(Color color);      // Draw sphere without any matrix transformation
 
+<<<<<<< HEAD
 void DrawSunShiny(Model sun_Model, float radius);
+=======
+>>>>>>> 59c9252 (textures des planetes et halo lumineux du soleil et fond etoilé)
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
@@ -108,17 +135,22 @@ int main(void)
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "raylib [models] example - rlgl solar system");
+<<<<<<< HEAD
     
     Model sunModel = LoadModelFromMesh(GenMeshSphere(1.0f, 32, 32));
     Texture2D sunTexture = LoadTexture("texture/soleil.jpg");
 
 <<<<<<< HEAD:src/systeme.c
+=======
+
+>>>>>>> 59c9252 (textures des planetes et halo lumineux du soleil et fond etoilé)
     int monitor = GetCurrentMonitor();
     int monitorWidth = GetMonitorWidth(monitor);
     int monitorHeight = GetMonitorHeight(monitor);
 
     SetWindowPosition((monitorWidth - screenWidth) / 2, (monitorHeight - screenHeight) / 2);
     RestoreWindow();
+<<<<<<< HEAD
 
 =======
     if (IsTextureValid(sunTexture)) {
@@ -143,6 +175,60 @@ int main(void)
 
     }
 >>>>>>> 97ef667 (ajout des textures):src/systeme_solaire.c
+=======
+    Model sphereModel = LoadModelFromMesh(GenMeshSphere(1.0f, 64, 64));
+    sphereModel.materials[0].maps[MATERIAL_MAP_DIFFUSE].color = WHITE;
+    
+    Texture2D textureSoleil = LoadTexture("texture/soleil.png");
+    if (textureSoleil.id == 0) {
+            printf("Erreur chargement texture soleil\n");
+        }
+    Texture2D texturesPlanetes[8];
+    for (int i = 0; i < nb_planetes; i++) {
+        texturesPlanetes[i] = LoadTexture(textures_planetes[i]);
+        
+    }
+
+    // Halo lumineux du soleil
+    Image haloImage = GenImageColor(512, 512, BLANK);
+for (int y = 0; y < 512; y++) {
+    for (int x = 0; x < 512; x++) {
+        float dx = x - 256.0f;
+        float dy = y - 256.0f;
+        float dist = sqrtf(dx * dx + dy * dy) / 256.0f;
+        if (dist <= 1.0f) {
+            unsigned char alpha = (unsigned char)(255.0f * (1.0f - dist) * (1.0f - dist));
+            ImageDrawPixel(&haloImage, x, y, (Color){ 255, 180, 40, alpha });
+        }
+    }
+}
+Texture2D haloTexture = LoadTextureFromImage(haloImage);
+UnloadImage(haloImage);
+
+//Fond étoilé
+Texture2D textureSkybox = LoadTexture("texture/etoile.png");
+Model skybox = LoadModelFromMesh(GenMeshSphere(200.0f, 32, 32)); // très grande sphère
+skybox.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textureSkybox;
+
+#define NB_PARTICULES 80
+typedef struct {
+    Vector3 pos;
+    float angle;
+    float vitesse;
+    float rayon;
+    float taille;
+    float phase;
+} Particule;
+
+Particule particules[NB_PARTICULES];
+for (int i = 0; i < NB_PARTICULES; i++) {
+    particules[i].angle   = ((float)rand() / RAND_MAX) * 2.0f * PI;
+    particules[i].vitesse = 0.3f + ((float)rand() / RAND_MAX) * 0.5f;
+    particules[i].rayon   = sunRadius + 0.2f + ((float)rand() / RAND_MAX) * 0.8f;
+    particules[i].taille  = 0.3f + ((float)rand() / RAND_MAX) * 0.5f;
+    particules[i].phase   = ((float)rand() / RAND_MAX) * 2.0f * PI;
+}
+>>>>>>> 59c9252 (textures des planetes et halo lumineux du soleil et fond etoilé)
     // Define the camera to look into our 3d world
     Camera camera = { 0 };
     camera.position = (Vector3){ 25.0f, 25.0f, 25.0f }; // Camera position
@@ -173,9 +259,61 @@ int main(void)
 
             BeginMode3D(camera);
 
+<<<<<<< HEAD
                 DrawSunShiny(sunModel, sunRadius);
 
                 rlPushMatrix();
+=======
+                // 1. Skybox en premier, faces intérieures visibles
+                rlDisableBackfaceCulling();   // ← clé : voir l'intérieur de la sphère
+                rlDisableDepthMask();
+                DrawModel(skybox, (Vector3){0,0,0}, 1.0f, WHITE);
+                rlEnableDepthMask();
+                rlEnableBackfaceCulling();
+                Vector3 soleilPos = { 0.0f, 0.0f, 0.0f };
+
+                float t = (float)GetTime();
+rlDisableDepthMask();
+BeginBlendMode(BLEND_ADDITIVE);
+for (int i = 0; i < NB_PARTICULES; i++) {
+    particules[i].angle += particules[i].vitesse * GetFrameTime();
+
+    // Rayon pulsant
+    float r = particules[i].rayon + sinf(t * 2.0f + particules[i].phase) * 0.3f;
+
+    Vector3 p = {
+        cosf(particules[i].angle) * r,
+        sinf(particules[i].phase + t) * 0.4f,  // légère variation verticale
+        sinf(particules[i].angle) * r
+    };
+
+    // Couleur qui alterne jaune/orange
+    float heat = (sinf(t * 3.0f + particules[i].phase) + 1.0f) / 2.0f;
+    Color c = {
+        255,
+        (unsigned char)(100 + heat * 120),
+        0,
+        (unsigned char)(80 + heat * 80)
+    };
+
+    DrawBillboard(camera, haloTexture, p, particules[i].taille, c);
+}
+EndBlendMode();
+rlEnableDepthMask();
+
+                // // Lumière autour du soleil
+                // BeginBlendMode(BLEND_ADDITIVE);
+                // DrawBillboard(camera, haloTexture, soleilPos, sunRadius * 3.0f, Fade(YELLOW, 0.35f));
+                // DrawBillboard(camera, haloTexture, soleilPos, sunRadius * 2.0f, Fade(ORANGE, 0.25f));
+                // EndBlendMode();
+                
+                // Soleil texturé
+                sphereModel.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = textureSoleil;
+
+                DrawModelEx(sphereModel,soleilPos,(Vector3){ 0.0f, 1.0f, 0.0f },(float)GetTime() * 8.0f,(Vector3){ sunRadius, sunRadius, sunRadius },WHITE);
+
+                
+>>>>>>> 59c9252 (textures des planetes et halo lumineux du soleil et fond etoilé)
                     for (int i = 0; i < nb_planetes; i++) {
                         Array_Vecteurs trajectoire = planetes.values[i];
                         Vecteurs position = trajectoire.values[index % trajectoire.size];
@@ -186,6 +324,7 @@ int main(void)
                             (float)(position.y * SCALE)
                         };
 
+<<<<<<< HEAD
 <<<<<<< HEAD:src/systeme.c
                         rlPushMatrix();
                             rlTranslatef(pos.x, pos.y, pos.z);
@@ -199,6 +338,13 @@ int main(void)
 >>>>>>> 97ef667 (ajout des textures):src/systeme_solaire.c
                     }
                 rlPopMatrix();
+=======
+                sphereModel.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texturesPlanetes[i];
+
+                DrawModelEx(sphereModel,pos,(Vector3){ 0.0f, 1.0f, 0.0f },(float)GetTime() * (20.0f + i * 3.0f),(Vector3){rayons_planetes[i],rayons_planetes[i],rayons_planetes[i]},WHITE);
+                }
+                
+>>>>>>> 59c9252 (textures des planetes et halo lumineux du soleil et fond etoilé)
 
                 // Some reference elements (not affected by previous matrix transformations)
                 // for (int i = 0; i < nb_planetes; i++) {
@@ -222,6 +368,15 @@ int main(void)
                 //         DrawLine3D(previous_pos, current_pos, couleurs_planetes[i]);
                 //     }
                 // }
+<<<<<<< HEAD
+=======
+
+                rlDisableDepthMask();
+            BeginBlendMode(BLEND_ADDITIVE);
+                DrawBillboard(camera, haloTexture, soleilPos, sunRadius * 6.0f, WHITE);
+            EndBlendMode();
+            rlEnableDepthMask();
+>>>>>>> 59c9252 (textures des planetes et halo lumineux du soleil et fond etoilé)
                 DrawGrid(40, 2.0f);
 
             EndMode3D();
@@ -234,6 +389,7 @@ int main(void)
     }
 
     for (int i = 0; i < nb_planetes; i++) {
+<<<<<<< HEAD
 <<<<<<< HEAD:src/systeme.c
         array_free(planetes.values[i]);
 =======
@@ -246,13 +402,32 @@ int main(void)
 
     UnloadTexture(sunTexture);
     UnloadModel(sunModel);
+=======
+        array_free(planetes.values[i]);
+    }
+    array_free(planetes);
+
+    for (int i = 0; i < nb_planetes; i++) {
+    UnloadTexture(texturesPlanetes[i]);
+    }
+
+    UnloadTexture(textureSoleil);
+    UnloadModel(sphereModel);
+
+    UnloadTexture(textureSkybox);
+    UnloadModel(skybox);
+>>>>>>> 59c9252 (textures des planetes et halo lumineux du soleil et fond etoilé)
     // De-Initialization
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
     return 0;
+<<<<<<< HEAD
+
+=======
 }
+>>>>>>> 59c9252 (textures des planetes et halo lumineux du soleil et fond etoilé)
 
 //--------------------------------------------------------------------------------------------
 // Module Functions Definition
@@ -298,6 +473,7 @@ void DrawSphereBasic(Color color)
         }
     rlEnd();
 }
+<<<<<<< HEAD
 
 void DrawSunShiny(Model sunModel, float radius)
 {
@@ -357,3 +533,5 @@ void DrawSunShiny(Model sunModel, float radius)
         WHITE
     );
 }
+=======
+>>>>>>> 59c9252 (textures des planetes et halo lumineux du soleil et fond etoilé)
