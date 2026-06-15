@@ -49,11 +49,7 @@ Vector3 convertir_position_simulation_en_3d(Vecteurs position_simulation) {
         direction_y = 0.0f;
     }
 
-    return (Vector3){
-        direction_x * distance_affichage,
-        0.0f,
-        direction_y * distance_affichage
-    };
+    return (Vector3){direction_x * distance_affichage, 0.0f, direction_y * distance_affichage};
 }
 
 struct Planete donnees_planetes[] = {
@@ -95,6 +91,8 @@ int main(void) {
     double constante_gravitationnelle = 6.67430e-11;
     double masse_soleil = 1.989e30;
     double masse_terre = 5.9720e24;
+
+    Music music;
 
     Array(Trajectoire) trajectoires_planetes = {0};
 
@@ -161,6 +159,15 @@ int main(void) {
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(largeur_fenetre, hauteur_fenetre, "Système Solaire");
+    InitAudioDevice();
+
+    music = LoadMusicStream("../assets/audio/music.mp3");
+    if (!IsMusicStreamPlaying(music)) {
+        printf("Erreur : musique non chargee\n");
+    } else {
+        printf("Musique chargee correctement\n");
+        PlayMusicStream(music);
+    }
 
     Camera camera = {0};
     camera.position = (Vector3){0.0f, 550.0f, 550.0f};
@@ -200,6 +207,8 @@ int main(void) {
         BeginDrawing();
             ClearBackground(BLACK);
 
+            UpdateMusicStream(music);
+
             BeginMode3D(camera);
 
                 rlPushMatrix();
@@ -215,16 +224,19 @@ int main(void) {
                         pas_affichage = 1;
                     }
 
-                    for (size_t j = 0; j + pas_affichage < nombre_points; j += pas_affichage) {
+                    size_t j = 0;
+
+                    while (j + pas_affichage < nombre_points) {
                         DrawLine3D(
                             trajectoires_affichage[i][j],
                             trajectoires_affichage[i][j + pas_affichage],
                             couleurs_planetes[i]
                         );
+                        j += pas_affichage;
                     }
 
                     DrawLine3D(
-                        trajectoires_affichage[i][nombre_points - 1],
+                        trajectoires_affichage[i][j],
                         trajectoires_affichage[i][0],
                         couleurs_planetes[i]
                     );
@@ -262,11 +274,7 @@ int main(void) {
                 Vector3 position_terre = trajectoires_affichage[INDEX_TERRE][index_terre];
                 Vector3 position_lune_relative = trajectoire_lune_affichage[index_lune];
 
-                Vector3 position_lune = {
-                    position_terre.x + position_lune_relative.x,
-                    0.0f,
-                    position_terre.z + position_lune_relative.z
-                };
+                Vector3 position_lune = {position_terre.x + position_lune_relative.x, 0.0f, position_terre.z + position_lune_relative.z};
 
                 rlPushMatrix();
                     rlTranslatef(
@@ -288,6 +296,10 @@ int main(void) {
 
         EndDrawing();
     }
+
+    StopMusicStream(music);
+
+
 
     for (int i = 0; i < NOMBRE_PLANETES; i++) {
         array_free(trajectoires_planetes.values[i]);
