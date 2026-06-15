@@ -138,6 +138,7 @@ int main(void)
          else {
         printf("Texture non chargee pour %s : %s\n",planetes[i].nom,planetes[i].texture_fichier);
         }
+    }
 
 
     }
