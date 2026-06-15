@@ -92,7 +92,7 @@ int main(void) {
     double masse_soleil = 1.989e30;
     double masse_terre = 5.9720e24;
 
-    Music music;
+    // Music music;
 
     Array(Trajectoire) trajectoires_planetes = {0};
 
@@ -161,13 +161,14 @@ int main(void) {
     InitWindow(largeur_fenetre, hauteur_fenetre, "Système Solaire");
     InitAudioDevice();
 
-    music = LoadMusicStream("../assets/audio/music.mp3");
-    if (!IsMusicStreamPlaying(music)) {
-        printf("Erreur : musique non chargee\n");
-    } else {
-        printf("Musique chargee correctement\n");
-        PlayMusicStream(music);
-    }
+    // music = LoadMusicStream("assets/audio/music.mp3");
+    // if (music.frameCount == 0) {
+    //     printf("Erreur : fichier audio non trouvé ou invalide\n");
+    //     printf("Chemin cherche : ../assets/audio/music.mp3\n");
+    // } else {
+    //     printf("Musique chargee correctement\n");
+    //     PlayMusicStream(music);
+    // }
 
     Camera camera = {0};
     camera.position = (Vector3){0.0f, 550.0f, 550.0f};
@@ -207,7 +208,7 @@ int main(void) {
         BeginDrawing();
             ClearBackground(BLACK);
 
-            UpdateMusicStream(music);
+            // UpdateMusicStream(music);
 
             BeginMode3D(camera);
 
@@ -297,7 +298,7 @@ int main(void) {
         EndDrawing();
     }
 
-    StopMusicStream(music);
+    // StopMusicStream(music);
 
 
 
