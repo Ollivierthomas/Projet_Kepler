@@ -81,7 +81,6 @@ Array(Vecteurs) simuler_planete(Planete planete, double G, double m_soleil) {
         array_push(array_vitesses,    v_next);
         array_push(array_cinetique,   energie_cinetique(v_next, planete.masse));
         array_push(array_potentielle, energie_potentielle(r_next, m_soleil, planete.masse, G));
-
     }
 
     // ✅ Libération correcte : on garde positions, on libère le reste
