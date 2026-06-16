@@ -7,7 +7,6 @@ Une simulation 3D interactive du système solaire en C avec physique gravitation
 - 🪐 Simulation des 8 planètes + la Lune
 - 🎨 Rendu 3D avec Raylib
 - 🔬 Calculs physiques précis (lois de Kepler, orbites elliptiques)
-- 🎵 Bande sonore intégrée
 - ⌨️ Commandes interactives
 
 ## Prérequis
