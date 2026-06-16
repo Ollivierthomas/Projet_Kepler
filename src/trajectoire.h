@@ -1,3 +1,6 @@
+/// @file trajectoire.h
+/// @brief Déclaration des fonctions pour simuler la trajectoire d'une planète autour du Soleil
+
 #ifndef TRAJECTOIRE_H
 #define TRAJECTOIRE_H
 
