@@ -71,7 +71,6 @@ Projet_Kepler/
 │   ├── vectors.h           # Opérations vectorielles
 │   └── tab_generic.h       # Conteneur générique (tableaux)
 ├── assets/
-│   ├── audio/              # Fichiers musicaux (.mp3)
 │   └── texture/            # Textures des planètes (.png)
 ├── build/                  # Dossier de build (généré)
 ├── meson.build             # Configuration de build
