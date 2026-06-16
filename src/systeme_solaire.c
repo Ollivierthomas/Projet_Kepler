@@ -323,6 +323,11 @@ int main(void) {
     double m_sol = 1.989e30;
     double m_terre = 5.9720e24;
 
+    Music music;
+
+    music = LoadMusicStream("../assets/audio/music.mp3");
+    PlayMusicStream(music);
+
     Array(Trajectoire) trajectoires_planetes = {0};
     for (int i = 0; i < NOMBRE_PLANETES; i++) {
         array_push(trajectoires_planetes, simuler_planete(donnees_planetes[i], G, m_sol));
@@ -482,6 +487,8 @@ int main(void) {
                     lune_visible = 0;
                 }
                 rayon_soleil = 0.0f;
+
+                UpdateMusicStream(music);
             }
 
             if (timer >= DUREE_FLASH) {
@@ -646,6 +653,9 @@ int main(void) {
 
         EndDrawing();
     }
+
+    StopMusicStream(music);
+    CloseAudioDevice();
 
     // Libération de la mémoire
     for (int i = 0; i < NOMBRE_PLANETES; i++) {
