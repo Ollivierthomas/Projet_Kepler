@@ -323,11 +323,6 @@ int main(void) {
     double m_sol = 1.989e30;
     double m_terre = 5.9720e24;
 
-    Music music;
-
-    music = LoadMusicStream("../assets/audio/music.mp3");
-    PlayMusicStream(music);
-
     Array(Trajectoire) trajectoires_planetes = {0};
     for (int i = 0; i < NOMBRE_PLANETES; i++) {
         array_push(trajectoires_planetes, simuler_planete(donnees_planetes[i], G, m_sol));
@@ -367,6 +362,15 @@ int main(void) {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(1200, 700, "Système Solaire");
     InitAudioDevice();
+
+    Music musique_ambiance = LoadMusicStream("assets/audio/music.mp3");
+    Music musique_explosion = LoadMusicStream("assets/audio/music_explosion.mp3");
+    musique_ambiance.looping = true;
+    musique_explosion.looping = false;
+
+    SetMusicVolume(musique_ambiance, 0.45f);
+    SetMusicVolume(musique_explosion, 0.85f);
+    PlayMusicStream(musique_ambiance);
 
     const float rayon_sol = 10.5f;
 
@@ -433,12 +437,18 @@ int main(void) {
         index_anim += (size_t)vitesse;
         float dt = GetFrameTime();
 
+        UpdateMusicStream(musique_ambiance);
+        UpdateMusicStream(musique_explosion);
+
         mettre_a_jour_camera(&camera, &orbite);
 
         if (IsKeyPressed(KEY_SPACE) && phase == PHASE_NORMAL) {
             phase = PHASE_GONFLEMENT;
             timer = 0.0f;
+            StopMusicStream(musique_ambiance);
+            PlayMusicStream(musique_explosion);
         }
+        
 
         if (phase == PHASE_GONFLEMENT) {
             timer += dt;
@@ -452,6 +462,8 @@ int main(void) {
                 phase = PHASE_FLASH;
                 timer = 0.0f;
                 ecran_alpha = 0.0f;
+
+
             }
         } else if (phase == PHASE_FLASH) {
             timer += dt;
@@ -487,8 +499,6 @@ int main(void) {
                     lune_visible = 0;
                 }
                 rayon_soleil = 0.0f;
-
-                UpdateMusicStream(music);
             }
 
             if (timer >= DUREE_FLASH) {
@@ -654,8 +664,10 @@ int main(void) {
         EndDrawing();
     }
 
-    StopMusicStream(music);
-    CloseAudioDevice();
+    StopMusicStream(musique_ambiance);
+    StopMusicStream(musique_explosion);
+    UnloadMusicStream(musique_ambiance);
+    UnloadMusicStream(musique_explosion);
 
     // Libération de la mémoire
     for (int i = 0; i < NOMBRE_PLANETES; i++) {
