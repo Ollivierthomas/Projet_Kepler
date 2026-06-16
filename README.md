@@ -19,13 +19,41 @@ Une simulation 3D interactive du système solaire en C avec physique gravitation
 ## Installation des dépendances
 
 ### Ubuntu/Debian
+
+#### Option 1 : Via les dépôts (recommandé si raylib y est disponible)
 ```bash
+sudo apt-get update
 sudo apt-get install -y \
   meson pkg-config \
   libraylib-dev \
   libgl1-mesa-dev \
   libx11-dev \
   libpthread-stubs0-dev
+```
+
+#### Option 2 : Compiler raylib depuis la source
+Si raylib n'est pas dans les dépôts ou version trop ancienne :
+
+```bash
+# Installer les dépendances de compilation pour raylib
+sudo apt-get install -y \
+  git build-essential \
+  libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev \
+  libxi-dev libasound2-dev
+
+# Cloner et compiler raylib
+git clone https://github.com/raysan5/raylib.git
+cd raylib/src
+make PLATFORM=PLATFORM_DESKTOP
+sudo make install PLATFORM=PLATFORM_DESKTOP
+
+# Mettre à jour la cache pkg-config
+sudo ldconfig
+```
+
+Vérifier l'installation :
+```bash
+pkg-config --cflags --libs raylib
 ```
 
 ### Fedora/RHEL
